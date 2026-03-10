@@ -4,7 +4,7 @@ const MENU_ITEMS = [
         id: 1,
         name: "The Beastly Burger",
         description: "Double Wagyu beef, truffle aioli, aged cheddar, and crispy bacon on a brioche bun.",
-        price: 18.99,
+        price: 499,
         category: 'Burgers',
         image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800"
     },
@@ -12,7 +12,7 @@ const MENU_ITEMS = [
         id: 2,
         name: "Wild Wings",
         description: "Crispy chicken wings tossed in our signature spicy buffalo sauce.",
-        price: 12.50,
+        price: 349,
         category: 'Appetizers',
         image: "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=800"
     },
@@ -20,7 +20,7 @@ const MENU_ITEMS = [
         id: 3,
         name: "Apex Steak",
         description: "12oz Prime Ribeye served with garlic mashed potatoes and grilled asparagus.",
-        price: 34.00,
+        price: 1299,
         category: 'Main Course',
         image: "https://images.unsplash.com/photo-1546241072-48010ad28c2c?auto=format&fit=crop&q=80&w=800"
     },
@@ -28,7 +28,7 @@ const MENU_ITEMS = [
         id: 4,
         name: "Predator Pasta",
         description: "Spicy Italian sausage, sun-dried tomatoes, and spinach in a creamy vodka sauce.",
-        price: 21.00,
+        price: 599,
         category: 'Main Course',
         image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&q=80&w=800"
     },
@@ -36,7 +36,7 @@ const MENU_ITEMS = [
         id: 5,
         name: "Truffle Fries",
         description: "Hand-cut fries tossed with truffle oil, parmesan, and fresh parsley.",
-        price: 8.50,
+        price: 249,
         category: 'Appetizers',
         image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=80&w=800"
     },
@@ -44,7 +44,7 @@ const MENU_ITEMS = [
         id: 6,
         name: "Volcano Cake",
         description: "Warm chocolate lava cake with vanilla bean ice cream.",
-        price: 9.99,
+        price: 299,
         category: 'Desserts',
         image: "https://images.unsplash.com/photo-1624353339193-29b315d85642?auto=format&fit=crop&q=80&w=800"
     },
@@ -52,7 +52,7 @@ const MENU_ITEMS = [
         id: 7,
         name: "Monster Milkshake",
         description: "Giant Oreo and brownie milkshake topped with whipped cream.",
-        price: 7.50,
+        price: 199,
         category: 'Drinks',
         image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&q=80&w=800"
     },
@@ -60,7 +60,7 @@ const MENU_ITEMS = [
         id: 8,
         name: "Dragon's Breath",
         description: "Spicy mango and habanero infused mocktail with a chili rim.",
-        price: 6.50,
+        price: 149,
         category: 'Drinks',
         image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800"
     }
@@ -69,6 +69,8 @@ const MENU_ITEMS = [
 // App State
 let cart = [];
 let activeSection = 'home';
+let orders = JSON.parse(localStorage.getItem('beastly_orders')) || [];
+let reservations = JSON.parse(localStorage.getItem('beastly_reservations')) || [];
 
 // DOM Elements
 const menuGrid = document.getElementById('menu-grid');
@@ -81,6 +83,37 @@ const cartOverlay = document.getElementById('cart-overlay');
 const sections = document.querySelectorAll('.section');
 const navLinks = document.querySelectorAll('.nav-links a');
 const orderStatus = document.getElementById('order-status');
+const mobileToggle = document.getElementById('mobile-toggle');
+const navLinksContainer = document.querySelector('.nav-links');
+
+// Checkout Elements
+const checkoutForm = document.getElementById('checkout-form');
+const upiDetails = document.getElementById('upi-details');
+const checkoutItemsList = document.getElementById('checkout-items-list');
+const chkSubtotal = document.getElementById('chk-subtotal');
+const chkDelivery = document.getElementById('chk-delivery');
+const chkTotal = document.getElementById('chk-total');
+
+// Payment Modal Elements
+const paymentModal = document.getElementById('payment-modal');
+const pmClose = document.getElementById('pm-close');
+const pmPayBtn = document.getElementById('pm-pay-btn');
+const pmTotalAmount = document.getElementById('pm-total-amount');
+const pmBtnAmount = document.getElementById('pm-btn-amount');
+const pmOrderId = document.getElementById('pm-order-id');
+
+// Admin Elements
+const ordersListBody = document.getElementById('orders-list-body');
+const reservationsListBody = document.getElementById('reservations-list-body');
+const totalOrdersCount = document.getElementById('total-orders-count');
+const totalRevenueCount = document.getElementById('total-revenue-count');
+const pendingOrdersCount = document.getElementById('pending-orders-count');
+
+// Order Success Elements
+const successOrderId = document.getElementById('success-order-id');
+const successTotal = document.getElementById('success-total');
+const successPayment = document.getElementById('success-payment');
+const successItemsList = document.getElementById('success-items-list');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -89,6 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCartListeners();
     setupFormListeners();
     animateCounters(); // Initialize scroll observer
+    setupMobileMenu();
+    setupCheckout();
+    setupPaymentModal();
+    renderAdminDashboard();
 });
 
 // Navigation
@@ -98,12 +135,39 @@ function setupNavigation() {
             e.preventDefault();
             const sectionId = link.getAttribute('data-section');
             if (sectionId) switchSection(sectionId);
+            
+            // Close mobile menu on click
+            if (navLinksContainer.classList.contains('active')) {
+                toggleMobileMenu();
+            }
         });
     });
 
     document.getElementById('explore-menu').addEventListener('click', () => switchSection('menu'));
-    document.getElementById('home-link').addEventListener('click', () => switchSection('home'));
+    document.getElementById('home-link').addEventListener('click', () => {
+        switchSection('home');
+        if (navLinksContainer.classList.contains('active')) {
+            toggleMobileMenu();
+        }
+    });
 }
+
+function setupMobileMenu() {
+    mobileToggle.addEventListener('click', toggleMobileMenu);
+}
+
+function toggleMobileMenu() {
+    navLinksContainer.classList.toggle('active');
+    const icon = mobileToggle.querySelector('i');
+    if (navLinksContainer.classList.contains('active')) {
+        icon.classList.replace('fa-bars', 'fa-times');
+        document.body.style.overflow = 'hidden';
+    } else {
+        icon.classList.replace('fa-times', 'fa-bars');
+        document.body.style.overflow = 'auto';
+    }
+}
+
 
 // Form Listeners
 function setupFormListeners() {
@@ -119,14 +183,30 @@ function setupFormListeners() {
         btn.disabled = true;
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Checking Availability...`;
         
+        const reservationData = {
+            id: 'RES' + Math.floor(Math.random() * 1000000),
+            name: document.getElementById('res-name').value,
+            phone: document.getElementById('res-phone').value,
+            date: document.getElementById('res-date').value,
+            time: document.getElementById('res-time').value,
+            guests: document.getElementById('res-guests').value,
+            occasion: document.getElementById('res-occasion').value,
+            notes: document.getElementById('res-notes').value,
+            timeBooked: new Date().toLocaleString()
+        };
+
         setTimeout(() => {
+            // Save to reservations array and localStorage
+            reservations.unshift(reservationData);
+            localStorage.setItem('beastly_reservations', JSON.stringify(reservations));
+
             btn.innerHTML = originalText;
             btn.disabled = false;
             resStatus.innerHTML = `<div class="info-group" style="margin-top: 20px; border-color: #22c55e;">
                 <i class="fas fa-check-circle" style="color: #22c55e;"></i>
                 <div>
                     <h4 style="color: #22c55e;">Reservation Confirmed!</h4>
-                    <p>The pack is ready for you. We'll text a confirmation to ${document.getElementById('res-phone').value}.</p>
+                    <p>The pack is ready for you. We'll text a confirmation to ${reservationData.phone}.</p>
                 </div>
             </div>`;
             resForm.reset();
@@ -135,6 +215,8 @@ function setupFormListeners() {
             setTimeout(() => {
                 resStatus.innerHTML = '';
             }, 5000);
+            
+            renderAdminDashboard();
         }, 2000);
     });
 }
@@ -142,9 +224,18 @@ function setupFormListeners() {
 
 
 function switchSection(sectionId) {
-    sections.forEach(s => s.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
-    
+    const currentActive = document.querySelector('.section.active');
+    if (currentActive) {
+        currentActive.classList.remove('active');
+    }
+
+    setTimeout(() => {
+        sections.forEach(s => s.style.display = 'none');
+        const newActive = document.getElementById(sectionId);
+        newActive.style.display = 'block';
+        setTimeout(() => newActive.classList.add('active'), 50); // Delay to trigger transition
+    }, 250); // Half of the transition time
+
     navLinks.forEach(l => {
         l.classList.remove('active');
         if (l.getAttribute('data-section') === sectionId) l.classList.add('active');
@@ -152,7 +243,232 @@ function switchSection(sectionId) {
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Counter animation trigger removed from here to support scroll-based trigger
+    // Counter animation for About section
+    if (sectionId === 'about') {
+        animateCounters();
+    }
+
+    // Prepare checkout if moving to it
+    if (sectionId === 'checkout') {
+        prepareCheckout();
+    }
+
+    // Refresh Admin Dashboard if moving to it
+    if (sectionId === 'admin') {
+        renderAdminDashboard();
+    }
+}
+
+function setupCheckout() {
+    // Set initial state
+    const confirmBtn = document.getElementById('confirm-checkout');
+    if (document.querySelector('input[name="payment"]:checked').value === 'razorpay') {
+        upiDetails.style.display = 'block';
+        confirmBtn.style.background = '#3B82F6';
+        confirmBtn.style.borderColor = '#3B82F6';
+    } else {
+        upiDetails.style.display = 'none';
+    }
+
+    // Payment method toggle
+    const paymentOptions = document.querySelectorAll('input[name="payment"]');
+    paymentOptions.forEach(opt => {
+        opt.addEventListener('change', (e) => {
+            const confirmBtn = document.getElementById('confirm-checkout');
+            if (e.target.value === 'razorpay') {
+                upiDetails.style.display = 'block';
+                confirmBtn.style.background = '#3B82F6';
+                confirmBtn.style.borderColor = '#3B82F6';
+            } else {
+                upiDetails.style.display = 'none';
+                confirmBtn.style.background = '';
+                confirmBtn.style.borderColor = '';
+            }
+        });
+    });
+
+    // Checkout Form Submit
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            
+            if (paymentMethod === 'razorpay') {
+                // Show Razorpay-like Modal
+                const total = chkTotal.textContent;
+                const tempId = 'order_' + Math.random().toString(36).substr(2, 9);
+                pmOrderId.textContent = tempId;
+                pmTotalAmount.textContent = total;
+                paymentModal.style.display = 'flex';
+            } else {
+                // Cash on Delivery - Save immediately
+                processOrder('COD');
+            }
+        });
+    }
+}
+
+function setupPaymentModal() {
+    pmClose.addEventListener('click', () => {
+        paymentModal.style.display = 'none';
+    });
+
+    pmPayBtn.addEventListener('click', () => {
+        pmPayBtn.disabled = true;
+        pmPayBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+        
+        setTimeout(() => {
+            pmPayBtn.disabled = false;
+            pmPayBtn.innerHTML = `Pay Now`;
+            paymentModal.style.display = 'none';
+            processOrder('Razorpay', pmOrderId.textContent);
+        }, 2500);
+    });
+}
+
+function processOrder(method, existingId = null) {
+    const btn = document.getElementById('confirm-checkout');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Finalizing Order...`;
+    
+    setTimeout(() => {
+        const orderData = {
+            id: existingId || ('ORD' + Math.floor(Math.random() * 1000000)),
+            customer: document.getElementById('chk-name').value,
+            phone: document.getElementById('chk-phone').value,
+            address: document.getElementById('chk-address').value,
+            city: document.getElementById('chk-city').value,
+            items: cart.map(i => `${i.quantity}x ${i.name}`).join(', '),
+            total: chkTotal.textContent,
+            payment: method,
+            time: new Date().toLocaleString(),
+            status: method === 'Razorpay' ? 'Paid' : 'COD'
+        };
+
+        // Save to orders array and localStorage
+        orders.unshift(orderData);
+        localStorage.setItem('beastly_orders', JSON.stringify(orders));
+
+        // Populate and show success page
+        successOrderId.textContent = orderData.id;
+        successTotal.textContent = orderData.total;
+        successPayment.textContent = orderData.payment;
+        successItemsList.innerHTML = cart.map(item => `
+            <div class="chk-item-row">
+                <span><span class="qty">${item.quantity}x</span> ${item.name}</span>
+                <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+        `).join('');
+        switchSection('order-success');
+
+        cart = [];
+        updateCart();
+        checkoutForm.reset();
+        renderAdminDashboard();
+    }, 1500);
+}
+
+function renderAdminDashboard() {
+    if (!ordersListBody) return;
+
+    // Update Stats
+    totalOrdersCount.textContent = orders.length;
+    const revenue = orders.reduce((acc, order) => {
+        const amount = parseFloat(order.total.split('₹')[1]);
+        return acc + amount;
+    }, 0);
+    totalRevenueCount.textContent = `₹${revenue.toFixed(2)}`;
+    pendingOrdersCount.textContent = orders.filter(o => o.status === 'COD').length;
+
+    // Render Orders Table
+    if (orders.length === 0) {
+        ordersListBody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 50px; color: var(--text-secondary);">No orders yet. Start hunting!</td></tr>`;
+    } else {
+        ordersListBody.innerHTML = orders.map(order => `
+            <tr>
+                <td style="font-weight: bold; color: var(--accent-color);">${order.id}</td>
+                <td>
+                    <div style="font-weight: bold;">${order.customer}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">${order.phone}</div>
+                </td>
+                <td>
+                    <div style="font-size: 0.8rem; line-height: 1.2;">${order.address}, ${order.city}</div>
+                </td>
+                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${order.items}">${order.items}</td>
+                <td style="font-weight: bold;">${order.total}</td>
+                <td>${order.payment}</td>
+                <td style="font-size: 0.75rem; color: var(--text-secondary);">${order.time}</td>
+                <td>
+                    <span class="status-badge ${order.status.toLowerCase()}">${order.status}</span>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Render Reservations Table
+    if (!reservationsListBody) return;
+    if (reservations.length === 0) {
+        reservationsListBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 50px; color: var(--text-secondary);">No reservations yet.</td></tr>`;
+    } else {
+        reservationsListBody.innerHTML = reservations.map(res => `
+            <tr>
+                <td style="font-weight: bold; color: var(--accent-color);">${res.id}</td>
+                <td>
+                    <div style="font-weight: bold;">${res.name}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">${res.phone}</div>
+                </td>
+                <td>
+                    <div style="font-weight: bold;">${res.date}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">${res.time}</div>
+                </td>
+                <td>${res.guests}</td>
+                <td style="text-transform: capitalize;">${res.occasion}</td>
+                <td style="max-width: 150px; font-size: 0.8rem; color: var(--text-secondary);">${res.notes || 'No notes'}</td>
+                <td style="font-size: 0.75rem; color: var(--text-secondary);">${res.timeBooked}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+function clearAllOrders() {
+    if (confirm("Are you sure you want to clear all order history? This cannot be undone.")) {
+        orders = [];
+        localStorage.removeItem('beastly_orders');
+        renderAdminDashboard();
+    }
+}
+
+function clearAllReservations() {
+    if (confirm("Are you sure you want to clear all reservation history? This cannot be undone.")) {
+        reservations = [];
+        localStorage.removeItem('beastly_reservations');
+        renderAdminDashboard();
+    }
+}
+
+function prepareCheckout() {
+    if (cart.length === 0) {
+        alert("Your haul is empty! Go hunting in the menu first.");
+        switchSection('menu');
+        return;
+    }
+
+    // Render summary
+    checkoutItemsList.innerHTML = cart.map(item => `
+        <div class="chk-item-row">
+            <span><span class="qty">${item.quantity}x</span> ${item.name}</span>
+            <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+    `).join('');
+
+    const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const delivery = 40.00;
+    
+    chkSubtotal.textContent = `₹${subtotal.toFixed(2)}`;
+    chkDelivery.textContent = `₹${delivery.toFixed(2)}`;
+    chkTotal.textContent = `₹${(subtotal + delivery).toFixed(2)}`;
 }
 
 function animateCounters() {
@@ -207,7 +523,7 @@ function renderMenu() {
         <div class="menu-item">
             <div class="menu-img">
                 <img src="${item.image}" alt="${item.name}">
-                <div class="price-tag">$${item.price.toFixed(2)}</div>
+                <div class="price-tag">₹${item.price.toFixed(2)}</div>
             </div>
             <div class="menu-info">
                 <div class="category">${item.category}</div>
@@ -273,7 +589,7 @@ function updateCart() {
                 <div class="cart-item-info">
                     <div class="cart-item-header">
                         <h4>${item.name}</h4>
-                        <span class="accent">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <span class="accent">₹${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                     <div class="cart-item-controls">
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -290,10 +606,10 @@ function updateCart() {
 
     // Update Totals
     const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const delivery = subtotal > 0 ? 5.00 : 0;
-    subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('delivery-fee').textContent = `$${delivery.toFixed(2)}`;
-    totalPriceEl.textContent = `$${(subtotal + delivery).toFixed(2)}`;
+    const delivery = subtotal > 0 ? 40.00 : 0;
+    subtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('delivery-fee').textContent = `₹${delivery.toFixed(2)}`;
+    totalPriceEl.textContent = `₹${(subtotal + delivery).toFixed(2)}`;
 }
 
 // Cart UI
@@ -304,23 +620,8 @@ function setupCartListeners() {
     
     document.getElementById('place-order').addEventListener('click', () => {
         if (cart.length === 0) return;
-        
-        const btn = document.getElementById('place-order');
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Placing Order...`;
-        
-        setTimeout(() => {
-            orderStatus.innerHTML = `<i class="fas fa-check-circle" style="color: #22c55e;"></i> Order Placed! The beast is on its way.`;
-            cart = [];
-            updateCart();
-            
-            setTimeout(() => {
-                orderStatus.innerHTML = '';
-                btn.disabled = false;
-                btn.innerHTML = `Place Order <i class="fas fa-chevron-right"></i>`;
-                closeCart();
-            }, 3000);
-        }, 2000);
+        closeCart();
+        switchSection('checkout');
     });
 }
 

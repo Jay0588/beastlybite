@@ -22,9 +22,14 @@
                 <li><a href="#" data-section="reservations">Reservations</a></li>
                 
             </ul>
-            <div class="cart-btn" id="cart-open">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count">0</span>
+            <div class="nav-right">
+                <div class="cart-btn" id="cart-open">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <div class="mobile-toggle" id="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
             </div>
         </div>
     </nav>
@@ -104,8 +109,7 @@
                             <i class="fas fa-phone"></i>
                             <div>
                                 <h4>Call the Pack</h4>
-                                <p>+91 97120 33391</p>
-                                <p>+91 98798 68779</p>
+                                <p>+91 97120 33391 | +91 98798 68779</p>
                             </div>
                         </div>
                         <div class="info-group">
@@ -304,6 +308,197 @@
                 </div>
             </div>
         </section>
+
+        <!-- Checkout Section -->
+        <section id="checkout" class="section">
+            <div class="container checkout-section">
+                <div class="section-header">
+                    <h2>Complete Your <span class="accent">Order</span></h2>
+                    <p>Provide your delivery details and choose a payment method.</p>
+                </div>
+
+                <div class="checkout-grid">
+                    <div class="checkout-form-container">
+                        <form id="checkout-form" class="beastly-form enhanced">
+                            <h3 class="form-title">Delivery Address</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="chk-name"><i class="fas fa-user"></i> Full Name</label>
+                                    <input type="text" id="chk-name" required placeholder="Enter your name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="chk-phone"><i class="fas fa-phone"></i> Phone Number</label>
+                                    <input type="tel" id="chk-phone" required placeholder="Enter your phone number">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="chk-address"><i class="fas fa-map-marker-alt"></i> Full Address</label>
+                                <textarea id="chk-address" rows="3" required placeholder="House No, Street, Landmark, Area..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="chk-city"><i class="fas fa-city"></i> City</label>
+                                <input type="text" id="chk-city" required value="Surat">
+                            </div>
+
+                            <h3 class="form-title" style="margin-top: 40px;">Payment Method</h3>
+                            <div class="payment-options">
+                                <label class="payment-card">
+                                    <input type="radio" name="payment" value="razorpay" checked>
+                                    <div class="payment-info">
+                                        <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="Razorpay" style="height: 25px; margin-bottom: 5px;">
+                                        <span>Razorpay</span>
+                                    </div>
+                                    <div class="check-mark"><i class="fas fa-check-circle"></i></div>
+                                </label>
+                                <label class="payment-card">
+                                    <input type="radio" name="payment" value="cod">
+                                    <div class="payment-info">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span>Cash on Delivery</span>
+                                    </div>
+                                    <div class="check-mark"><i class="fas fa-check-circle"></i></div>
+                                </label>
+                            </div>
+
+                            <div id="upi-details" class="upi-box" style="display: none;">
+                                <p>Pay using Razorpay</p>
+                                <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="Razorpay" style="height: 30px; margin-bottom: 10px;">
+                                <p class="small-text" style="color: #64748b; font-size: 0.8rem;">Secure payment through Razorpay Gateway.</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block btn-large" id="confirm-checkout">
+                                <span>Place Order</span>
+                                <i class="fas fa-check-double"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="checkout-summary">
+                        <div class="hours-card">
+                            <h4>Order Summary</h4>
+                            <div id="checkout-items-list">
+                                <!-- Items will be listed here -->
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="hour-row"><span>Subtotal</span> <span id="chk-subtotal">₹0.00</span></div>
+                            <div class="hour-row"><span>Delivery</span> <span id="chk-delivery">₹40.00</span></div>
+                            <div class="hour-row total"><span>Total</span> <span class="accent" id="chk-total">₹40.00</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard Section -->
+        <section id="admin" class="section">
+            <div class="container admin-section">
+                <div class="section-header">
+                    <h2>Admin <span class="accent">Dashboard</span></h2>
+                    <p>Track live orders and monitor your jungle's performance.</p>
+                </div>
+
+                <div class="admin-stats">
+                    <div class="admin-stat-card">
+                        <span class="stat-label">Total Orders</span>
+                        <span class="stat-value" id="total-orders-count">0</span>
+                    </div>
+                    <div class="admin-stat-card">
+                        <span class="stat-label">Total Revenue</span>
+                        <span class="stat-value accent" id="total-revenue-count">₹0</span>
+                    </div>
+                    <div class="admin-stat-card">
+                        <span class="stat-label">Pending</span>
+                        <span class="stat-value" id="pending-orders-count">0</span>
+                    </div>
+                </div>
+
+                <div class="orders-container">
+                    <div class="orders-header">
+                        <h3>Recent Orders</h3>
+                        <button class="btn btn-outline btn-sm" onclick="clearAllOrders()">Clear All Orders</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Address</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-list-body">
+                                <!-- Live orders will appear here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="orders-container" style="margin-top: 50px;">
+                    <div class="orders-header">
+                        <h3>Table Reservations</h3>
+                        <button class="btn btn-outline btn-sm" onclick="clearAllReservations()">Clear All Reservations</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Res ID</th>
+                                    <th>Customer</th>
+                                    <th>Date/Time</th>
+                                    <th>Guests</th>
+                                    <th>Occasion</th>
+                                    <th>Notes</th>
+                                    <th>Booked On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservations-list-body">
+                                <!-- Reservations will appear here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Success Section -->
+        <section id="order-success" class="section">
+            <div class="container success-container">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Order <span class="accent">Confirmed!</span></h2>
+                <p>Your beastly feast is being prepared. The pack is on its way!</p>
+                
+                <div class="success-details">
+                    <div class="detail-item">
+                        <span>Order ID</span>
+                        <strong id="success-order-id">#ORD12345</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Total Amount</span>
+                        <strong id="success-total">₹0.00</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Payment Method</span>
+                        <strong id="success-payment">N/A</strong>
+                    </div>
+                </div>
+
+                <div class="success-summary">
+                    <h4>Order Summary</h4>
+                    <div id="success-items-list">
+                        <!-- Dynamic items here -->
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="switchSection('home')">Back to Home</button>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -345,6 +540,7 @@
         </div>
         <div class="footer-bottom">
             <p>© 2026 The Beastly Bite. All rights reserved. Designed for the wild.</p>
+            <a href="#" onclick="switchSection('admin')" style="color: #1e293b; font-size: 0.7rem; text-decoration: none; margin-top: 10px; display: inline-block;">Admin Login</a>
         </div>
     </footer>
 
@@ -362,19 +558,56 @@
             <div class="cart-summary">
                 <div class="summary-row">
                     <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
+                    <span id="subtotal">₹0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Delivery</span>
-                    <span id="delivery-fee">$5.00</span>
+                    <span id="delivery-fee">₹40.00</span>
                 </div>
                 <div class="summary-row total">
                     <span>Total</span>
-                    <span class="accent" id="total-price">$5.00</span>
+                    <span class="accent" id="total-price">₹40.00</span>
                 </div>
             </div>
             <button class="btn btn-primary btn-block" id="place-order">Place Order <i class="fas fa-chevron-right"></i></button>
             <div class="order-status" id="order-status"></div>
+        </div>
+    </div>
+
+    <!-- Payment Modal (Razorpay Style) -->
+    <div class="payment-modal-overlay" id="payment-modal">
+        <div class="payment-modal razorpay-theme">
+            <div class="pm-header razorpay">
+                <div class="pm-logo">
+                    <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="Razorpay">
+                </div>
+                <button class="pm-close" id="pm-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="pm-body">
+                <div class="pm-order-info">
+                    <p><strong>The Beastly Bite</strong></p>
+                    <p>Order ID: <span id="pm-order-id">ORD12345</span></p>
+                </div>
+                <div class="pm-amount-box razorpay">
+                    <span class="pm-amount" id="pm-total-amount">₹0.00</span>
+                </div>
+                <div class="pm-razorpay-content">
+                    <div class="razorpay-input-group">
+                        <label for="razorpay-card-number">Card Number</label>
+                        <input type="text" id="razorpay-card-number" placeholder="XXXX XXXX XXXX XXXX">
+                    </div>
+                    <div class="razorpay-input-group">
+                        <label for="razorpay-card-name">Card Holder Name</label>
+                        <input type="text" id="razorpay-card-name" placeholder="e.g. John Doe">
+                    </div>
+                </div>
+            </div>
+            <div class="pm-footer razorpay">
+                <button class="btn btn-razorpay" id="pm-pay-btn">Pay Now</button>
+                <div class="razorpay-security">
+                    <i class="fas fa-lock"></i> Secured by Razorpay
+                </div>
+            </div>
         </div>
     </div>
 

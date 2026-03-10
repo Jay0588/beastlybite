@@ -84,7 +84,9 @@ const sections = document.querySelectorAll('.section');
 const navLinks = document.querySelectorAll('.nav-links a');
 const orderStatus = document.getElementById('order-status');
 const mobileToggle = document.getElementById('mobile-toggle');
-const navLinksContainer = document.querySelector('.nav-links');
+const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+const mobileMenuClose = document.getElementById('mobile-menu-close');
+const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
 
 // Checkout Elements
 const checkoutForm = document.getElementById('checkout-form');
@@ -135,10 +137,16 @@ function setupNavigation() {
             e.preventDefault();
             const sectionId = link.getAttribute('data-section');
             if (sectionId) switchSection(sectionId);
-            
-            // Close mobile menu on click
-            if (navLinksContainer.classList.contains('active')) {
-                toggleMobileMenu();
+        });
+    });
+
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = link.getAttribute('data-section');
+            if (sectionId) {
+                switchSection(sectionId);
+                closeMobileMenu();
             }
         });
     });
@@ -146,26 +154,22 @@ function setupNavigation() {
     document.getElementById('explore-menu').addEventListener('click', () => switchSection('menu'));
     document.getElementById('home-link').addEventListener('click', () => {
         switchSection('home');
-        if (navLinksContainer.classList.contains('active')) {
-            toggleMobileMenu();
-        }
     });
 }
 
 function setupMobileMenu() {
-    mobileToggle.addEventListener('click', toggleMobileMenu);
+    mobileToggle.addEventListener('click', openMobileMenu);
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
 }
 
-function toggleMobileMenu() {
-    navLinksContainer.classList.toggle('active');
-    const icon = mobileToggle.querySelector('i');
-    if (navLinksContainer.classList.contains('active')) {
-        icon.classList.replace('fa-bars', 'fa-times');
-        document.body.style.overflow = 'hidden';
-    } else {
-        icon.classList.replace('fa-times', 'fa-bars');
-        document.body.style.overflow = 'auto';
-    }
+function openMobileMenu() {
+    mobileMenuOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMobileMenu() {
+    mobileMenuOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
 }
 
 

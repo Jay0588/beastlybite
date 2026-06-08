@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Mic, MicOff, Plus, Trash2, ChevronRight } from "lucide-react";
+import { Send, Mic, MicOff, Plus, ChevronRight } from "lucide-react";
+import { UploadButton } from "@/components/ui/upload/FileUploadZone";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useStore } from "@/store";
@@ -296,6 +297,9 @@ export default function ChatPanel() {
               t.style.height = Math.min(t.scrollHeight, 128) + "px";
             }}
           />
+
+          {/* Upload button */}
+          <UploadButton />
 
           {/* Voice button */}
           <button

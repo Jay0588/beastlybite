@@ -17,6 +17,7 @@ const PANEL_LABELS: Record<string, string> = {
   research: "RESEARCH WORKSPACE",
   notifications: "NOTIFICATIONS",
   settings: "SETTINGS",
+  ide: "IDE — CODE EDITOR",
 };
 
 export default function PanelHeader() {

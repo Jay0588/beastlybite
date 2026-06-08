@@ -6,6 +6,7 @@ import HUDBackground from "@/components/hud/particles/HUDBackground";
 import Sidebar from "@/components/ui/layout/Sidebar";
 import PanelHeader from "@/components/ui/layout/PanelHeader";
 import ApprovalModal from "@/components/ui/modals/ApprovalModal";
+import { GlobalDropZone } from "@/components/ui/upload/FileUploadZone";
 import { useStore } from "@/store";
 import { jayWS } from "@/lib/websocket";
 import { systemAPI } from "@/lib/api";
@@ -21,6 +22,7 @@ const SettingsPanel   = lazy(() => import("@/components/panels/settings/Settings
 const ProjectsPanel   = lazy(() => import("@/components/panels/projects/ProjectsPanel"));
 const ResearchPanel   = lazy(() => import("@/components/panels/research/ResearchPanel"));
 const NotificationsPanel = lazy(() => import("@/components/panels/notifications/NotificationsPanel"));
+const IDEPanel        = lazy(() => import("@/components/panels/ide/IDEPanel"));
 
 function PanelLoader() {
   return (
@@ -48,6 +50,7 @@ function ActivePanel() {
     research:      <ResearchPanel />,
     notifications: <NotificationsPanel />,
     settings:      <SettingsPanel />,
+    ide:           <IDEPanel />,
   };
 
   return (
@@ -122,6 +125,9 @@ export default function Home() {
 
       {/* Approval modal */}
       <ApprovalModal />
+
+      {/* Global drag-and-drop file upload */}
+      <GlobalDropZone />
     </div>
   );
 }

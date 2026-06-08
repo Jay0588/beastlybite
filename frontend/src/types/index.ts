@@ -155,6 +155,35 @@ export interface Task {
   created_at?: string;
 }
 
+// File system
+export interface FSEntry {
+  name: string;
+  path: string;
+  type: "file" | "directory";
+  size?: number;
+  modified?: number;
+  children?: FSEntry[];
+  isOpen?: boolean;
+}
+
+export interface OpenTab {
+  path: string;
+  name: string;
+  content: string;
+  language: string;
+  isDirty: boolean;
+  originalContent: string;
+}
+
+export interface UploadedFile {
+  id: string;
+  name: string;
+  content: string;
+  size: number;
+  type: string;
+  uploadedAt: string;
+}
+
 // WebSocket Events
 export type WSEventType =
   | "connected" | "pong"
@@ -172,7 +201,8 @@ export interface WSEvent {
 // UI
 export type PanelId =
   | "chat" | "voice" | "memory" | "projects" | "terminal"
-  | "trading" | "research" | "settings" | "dashboard" | "notifications";
+  | "trading" | "research" | "settings" | "dashboard" | "notifications"
+  | "ide";
 
 export interface Notification {
   id: string;

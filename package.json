@@ -1,0 +1,13 @@
+{
+  "name": "jay-ai-os",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "tauri": "cd frontend && npm run tauri dev",
+    "tauri:build": "cd frontend && npm run tauri build",
+    "backend": "cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "install:all": "cd frontend && npm install && cd ../backend && pip install -r requirements.txt"
+  },
+  "workspaces": ["frontend"]
+}

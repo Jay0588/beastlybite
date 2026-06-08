@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #050a14;
+  color: #e2f0ff;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a3a5c;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0ea5e9;
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 212, 255, 0.25);
+  color: #e2f0ff;
+}
+
+/* Prose overrides for dark theme */
+.prose {
+  color: #e2f0ff;
+}
+.prose strong {
+  color: #00d4ff;
+}
+.prose code {
+  color: #00d4ff;
+  background: rgba(0, 212, 255, 0.08);
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+.prose pre {
+  background: #050a14 !important;
+  border: 1px solid #1a3a5c;
+}
+.prose a {
+  color: #00d4ff;
+}
+.prose h1, .prose h2, .prose h3 {
+  color: #e2f0ff;
+}
+
+/* Panel transition */
+.panel-enter {
+  animation: fadeUp 0.25s ease-out;
+}
+
+/* Range input */
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 4px;
+  background: #1a3a5c;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00d4ff;
+  cursor: pointer;
+}
+
+/* HUD corner decorations */
+.hud-corner-tl::before,
+.hud-corner-tr::before,
+.hud-corner-bl::before,
+.hud-corner-br::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(0, 212, 255, 0.4);
+  border-style: solid;
+}
+.hud-corner-tl::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.hud-corner-tr::before { top: 0; right: 0; border-width: 1px 1px 0 0; }
+.hud-corner-bl::before { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+.hud-corner-br::before { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+/* Glow text */
+.text-glow {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* No select for UI chrome */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}

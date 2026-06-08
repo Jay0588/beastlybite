@@ -1,0 +1,41 @@
+{
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:3000",
+    "distDir": "../frontend/out"
+  },
+  "package": {
+    "productName": "J.A.Y.",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "category": "Utility",
+      "identifier": "com.jay.ai-os",
+      "icon": ["icons/32x32.png", "icons/128x128.png"],
+      "shortDescription": "Personal AI Operating System"
+    },
+    "security": { "csp": null },
+    "systemTray": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": false
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 860,
+        "resizable": true,
+        "title": "J.A.Y.",
+        "width": 1400,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "decorations": false,
+        "transparent": true,
+        "center": true
+      }
+    ]
+  }
+}

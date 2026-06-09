@@ -186,7 +186,7 @@ export function useFileUpload() {
 
       if (isImg) {
         dataUrl = await readAsDataURL(file);
-        content = `[Image: ${file.name} (${formatSize(file.size)})]`;
+        content = `[Image: ${file.name} (${formatSize(file.size)})] — analyzing with vision AI…`;
       } else if (isText) {
         try {
           const raw = await readAsText(file);
@@ -219,8 +219,49 @@ export function useFileUpload() {
       let chatContent = "";
 
       if (r.isImage) {
-        // Show image inline
+        // Show image inline + analyze with vision AI
         chatContent = `📎 **${r.name}** *(image, ${formatSize(r.size)})*\n\n![${r.name}](${r.dataUrl})`;
+        addMessage({ id: r.id, role: "user", content: chatContent, created_at: r.uploadedAt });
+
+        // Call vision API to analyze the image
+        try {
+          const visionResp = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/vision/analyze`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                image_base64: r.dataUrl ?? "",
+                prompt: "Analyze this image in detail. Describe what you see including: objects, text, colors, layout, and any relevant context.",
+              }),
+            }
+          );
+          if (visionResp.ok) {
+            const visionData = await visionResp.json();
+            addMessage({
+              id: genId(),
+              role: "assistant",
+              content: `**Image Analysis** *(via ${visionData.provider}/${visionData.model_used})*\n\n${visionData.description}`,
+              created_at: new Date().toISOString(),
+            });
+          } else {
+            const errText = await visionResp.text();
+            addMessage({
+              id: genId(),
+              role: "assistant",
+              content: `*I can see you uploaded an image, but I need a vision model to analyze it.*\n\nTo enable image understanding:\n- **Local:** Run \`ollama pull llava\`\n- **Cloud:** Set \`OPENROUTER_API_KEY\` in \`backend/.env\`\n\n*Error: ${errText.slice(0, 200)}*`,
+              created_at: new Date().toISOString(),
+            });
+          }
+        } catch (e: any) {
+          addMessage({
+            id: genId(),
+            role: "assistant",
+            content: `*Image uploaded but vision analysis failed: ${e.message}. Make sure the backend is running.*`,
+            created_at: new Date().toISOString(),
+          });
+        }
+        continue; // Skip the generic injection below
       } else if (r.isText) {
         const lang = r.name.split(".").pop() ?? "";
         chatContent = `📎 **${r.name}** *(${formatSize(r.size)}, ${r.content.split("\n").length} lines)*\n\n\`\`\`${lang}\n${r.content.slice(0, 8000)}${r.content.length > 8000 ? "\n\n// ... truncated" : ""}\n\`\`\``;

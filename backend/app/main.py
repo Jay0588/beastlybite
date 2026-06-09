@@ -104,6 +104,7 @@ from app.api.memory import router as memory_router
 from app.api.system import router as system_router
 from app.api.projects import router as projects_router
 from app.api.websocket import router as ws_router
+from app.api.vision import router as vision_router
 
 app.include_router(chat_router)
 app.include_router(voice_router)
@@ -113,6 +114,7 @@ app.include_router(memory_router)
 app.include_router(system_router)
 app.include_router(projects_router)
 app.include_router(ws_router)
+app.include_router(vision_router)
 
 
 @app.get("/")

@@ -266,6 +266,26 @@ OLLAMA_MODELS: List[ModelSpec] = [
 
 OPENROUTER_MODELS: List[ModelSpec] = [
 
+    # ── NVIDIA Nemotron Ultra 550B — Jay's primary cloud model ────────────
+    ModelSpec(
+        id="nvidia/nemotron-3-ultra-550b-a55b:free",
+        provider="openrouter",
+        display_name="NVIDIA Nemotron Ultra 550B (FREE)",
+        ram_gb=0,
+        context_tokens=32768,
+        fits_12gb=True,
+        speed="medium",
+        description="NVIDIA's 550B parameter beast. Free tier. Exceptional at everything — code, analysis, reasoning, creative.",
+        is_free=True,
+        tags=["free", "cloud", "powerful", "primary", "recommended"],
+        scores={
+            TaskType.QUICK:    9,  TaskType.CHAT:      10, TaskType.VOICE:    7,
+            TaskType.MEMORY:   9,  TaskType.TOOL:      9,  TaskType.CODE:     10,
+            TaskType.RESEARCH: 10, TaskType.TRADING:   10, TaskType.PLAN:     10,
+            TaskType.ANALYSIS: 10, TaskType.CREATIVE:  10, TaskType.CODE_HEAVY: 10,
+        },
+    ),
+
     ModelSpec(
         id="meta-llama/llama-3.1-8b-instruct:free",
         provider="openrouter",
